@@ -56,13 +56,27 @@ const mostrarProductos = () => {
         `
         contenedorProductos.appendChild(card);
 
-        //se agregan productos al carrito 
+        //se agregan productos al carrito y sale un cartelito abajo a la derecha avisandonos que se agrego el producto seleccionado
         const boton = document.getElementById(`boton${producto.id}`);
         boton.addEventListener("click", () => {
             agregarAlCarrito(producto.id)
+            Toastify({
+                text:"Producto agregado al carrito",
+                duration: 3000,
+                gravity: "bottom",
+                position: "right",
+                style:
+            {
+                background: "linear-gradient(to right, #51319c, #2B0388)",
+            }
+                
+                
+            }).showToast();
         })
     })
 }
+
+
 
 //fruncion agregar carrito 
 
@@ -112,9 +126,64 @@ const mostrarCarrito = () => {
         `
         contenedorCarrito.appendChild(card);
 
-       
+        // elimino productos del carrito
+        const boton = document.getElementById(`eliminar${producto.id}`);
+        boton.addEventListener("click", () => {
+            eliminarDelCarrito(producto.id);
+            Swal.fire( {
+                title:"Producto Eliminado, siga buscando sus figuritas mas deseadas !!!",
+                icon: "success",
+                background: "#2B0388",                
+                confirmButtonText: "Aceptar",      
+                confirmButtonColor: "#2B0388",
+            })
+        })
     })
     calcularTotal();
 }
+
+
+//eliminar un producto del carrito 
+
+const eliminarDelCarrito = (id) => {
+    const producto = carrito.find((producto) => producto.id === id);
+    const indice = carrito.indexOf(producto);
+    carrito.splice(indice, 1);
+    mostrarCarrito();
+  
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+}
+
+//vaciar carrito
+
+const vaciarCarrito = document.getElementById("vaciarCarrito");
+
+vaciarCarrito.addEventListener("click", () => {
+    eliminarTodoElCarrito();
+})
+
+//funcion que elimina el carrito completo
+
+const eliminarTodoElCarrito = () => {
+    carrito = [];
+    mostrarCarrito();
+ 
+    localStorage.clear();
+}
+
+//Mostramos mensaje con el total de la compra 
+
+const total = document.getElementById("total");
+
+const calcularTotal = () => {
+    let totalCompra = 0; 
+    carrito.forEach((producto) => {
+        totalCompra += producto.precio * producto.cantidad;
+        
+    })
+    total.innerHTML = `Total: $${totalCompra}`;
+}
+
+
 
 
